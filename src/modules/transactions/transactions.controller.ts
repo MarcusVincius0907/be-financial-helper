@@ -5,11 +5,21 @@ import { ExternalApiService } from 'src/external-api/external-api.service';
 export class TransactionsController {
   constructor(private externalService: ExternalApiService) {}
 
-  @Get('test')
-  async test() {
+  @Get()
+  async getTransactions() {
+    try {
+      const resp = await this.externalService.getTransactions();
+      return { status: 'success', data: resp?.data };
+    } catch (e) {
+      return { status: 'error', data: e };
+    }
+  }
+
+  @Get('get-token')
+  async getToken() {
     try {
       const resp = await this.externalService.createApiKey();
-      return { status: 'sucess', data: resp?.data };
+      return { status: 'success', data: resp?.data };
     } catch (e) {
       return { status: 'error', data: e };
     }
