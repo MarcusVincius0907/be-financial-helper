@@ -3,14 +3,12 @@ import { Observable } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import axios from 'axios';
-import { connectors } from 'src/constants/connectors.const';
 
 @Injectable()
 export class ExternalApiService {
   private url: string;
-  private apiKey: string;
 
-  constructor(private readonly httpService: HttpService) {
+  constructor() {
     this.url = process.env.PLUGGY_API;
   }
 
