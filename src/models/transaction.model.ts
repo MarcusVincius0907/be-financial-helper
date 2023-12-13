@@ -1,7 +1,7 @@
 import { Category } from './category.model';
 
 export interface Transaction {
-  __id: string;
+  __id?: string;
   externalId: string;
   description: string;
   date: string;

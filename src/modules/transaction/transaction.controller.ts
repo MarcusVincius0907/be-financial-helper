@@ -61,6 +61,16 @@ export class TransactionController {
     }
   }
 
+  @Delete('delete-all')
+  async deleteAll() {
+    try {
+      const deletedData = await this.service.deleteAll();
+      return { status: 'success', data: deletedData };
+    } catch (err) {
+      return { status: 'error', data: err };
+    }
+  }
+
   @Delete(':id')
   async delete(@Param('id') id: string) {
     try {
@@ -81,6 +91,16 @@ export class TransactionController {
       return { status: 'success', data: dataCreated };
     } catch (err) {
       return { status: 'error', data: err };
+    }
+  }
+
+  @Get('sync-transactions')
+  async syncTransactions() {
+    try {
+      const resp = await this.service.syncTransactions();
+      return { status: 'success', data: resp };
+    } catch (e) {
+      return { status: 'error', data: e };
     }
   }
 }
