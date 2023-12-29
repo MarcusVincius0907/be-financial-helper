@@ -9,6 +9,7 @@ import {
   TransactionSchema,
 } from '../database/schemas/transaction.schema';
 import { Category, CategorySchema } from '../database/schemas/category.schema';
+import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { Category, CategorySchema } from '../database/schemas/category.schema';
     ]),
   ],
   controllers: [TransactionController],
-  providers: [TransactionService, ExternalApiService],
+  providers: [TransactionService, ExternalApiService, NubankIntegrationService],
 })
 export class TransactionModule {}

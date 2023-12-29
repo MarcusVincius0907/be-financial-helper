@@ -18,16 +18,6 @@ export class TransactionController {
     private service: TransactionService,
   ) {}
 
-  @Get()
-  async getTransactions() {
-    try {
-      const resp = await this.externalService.getTransactions();
-      return { status: 'success', data: resp?.data };
-    } catch (e) {
-      return { status: 'error', data: e };
-    }
-  }
-
   @Get('get-token')
   async getToken() {
     try {

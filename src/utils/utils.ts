@@ -22,8 +22,8 @@ export function getFirstAndLastDayOfCurrentMonth(): {
   let lday = currentMonthDate.getDate().toString().padStart(2, '0');
 
   // Create the formatted date string
-  let fformattedDate = `${fyear}-${fmonth}-${fday}`;
-  let lformattedDate = `${lyear}-${lmonth}-${lday}`;
+  let fformattedDate = `${fyear}-${fmonth}-${fday}T00:00:00.418Z`;
+  let lformattedDate = `${lyear}-${lmonth}-${lday}T00:00:00.418Z`;
 
   return { from: fformattedDate, to: lformattedDate };
 }

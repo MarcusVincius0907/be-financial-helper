@@ -3,15 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Transaction as ClassSchema } from '../database/schemas/transaction.schema';
 import { Model } from 'mongoose';
 import { Transaction } from 'src/models/transaction.model';
-import { ExternalApiService } from 'src/external-api/external-api.service';
-import { PluggyTransactionItem } from 'src/models/external.model';
+import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
 
 @Injectable()
 export class TransactionService {
   constructor(
     @InjectModel(ClassSchema.name)
     private readonly model: Model<Transaction>,
-    private externalService: ExternalApiService,
+    private nubankService: NubankIntegrationService,
   ) {}
 
   async getAll() {
@@ -62,12 +61,12 @@ export class TransactionService {
 
   async syncTransactions() {
     try {
-      const externalTransactions = await this.externalService.getTransactions();
+      const externalTransactions = await this.nubankService.getTransactions();
       const currentTransactions = await this.model.find().exec();
 
       let needToAddTransactions: Transaction[] = [];
 
-      externalTransactions?.data?.results.forEach((externalTransaction) => {
+      externalTransactions?.data?.forEach((externalTransaction) => {
         let transactionNotFound = false;
 
         currentTransactions?.forEach((currentTransaction) => {
@@ -82,7 +81,7 @@ export class TransactionService {
             {
               externalId: externalTransaction.id,
               description: externalTransaction.description,
-              date: externalTransaction.date,
+              date: externalTransaction.time,
               amount: externalTransaction.amount,
               categoryId: 'default',
             },
