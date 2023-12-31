@@ -1,3 +1,5 @@
+import { Transaction } from "src/modules/database/schemas/transaction.schema";
+
 export function getFirstAndLastDayOfCurrentMonth(): {
   from: string;
   to: string;
@@ -26,4 +28,21 @@ export function getFirstAndLastDayOfCurrentMonth(): {
   let lformattedDate = `${lyear}-${lmonth}-${lday}T00:00:00.418Z`;
 
   return { from: fformattedDate, to: lformattedDate };
+}
+
+/* 
+  For some reason, data from Nubank has this strange format, so we need
+  to manually add the cents
+*/
+export function formatAmountValue(amount: number): number {
+  return amount / 100;
+}
+
+export function sortByDate(transacions: any): Transaction[] {
+  const sortByDateDescending = (a, b) => {
+    const bDate = new Date(b.date);
+    const aDate = new Date(a.date);
+    return Number(bDate) - Number(aDate);
+  }
+  return transacions.sort(sortByDateDescending);
 }

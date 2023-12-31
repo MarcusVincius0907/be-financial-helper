@@ -4,6 +4,7 @@ import { Transaction as ClassSchema } from '../database/schemas/transaction.sche
 import { Model } from 'mongoose';
 import { Transaction } from 'src/models/transaction.model';
 import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
+import { formatAmountValue } from 'src/utils/utils';
 
 @Injectable()
 export class TransactionService {
@@ -82,7 +83,7 @@ export class TransactionService {
               externalId: externalTransaction.id,
               description: externalTransaction.description,
               date: externalTransaction.time,
-              amount: externalTransaction.amount,
+              amount: formatAmountValue(externalTransaction.amount),
               categoryId: 'default',
             },
           ];

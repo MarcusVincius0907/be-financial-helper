@@ -10,6 +10,7 @@ import {
 import { ExternalApiService } from 'src/external-api/external-api.service';
 import { TransactionService } from './transaction.service';
 import { Transaction } from 'src/models/transaction.model';
+import { sortByDate } from 'src/utils/utils';
 
 @Controller('transaction')
 export class TransactionController {
@@ -31,8 +32,9 @@ export class TransactionController {
   @Get('all')
   async getAll() {
     try {
-      const allCategories = await this.service.getAll();
-      return { status: 'success', data: allCategories };
+      const allTransactions: Transaction[] = await this.service.getAll();
+      const sortedTransactions = sortByDate(allTransactions);
+      return { status: 'success', data: sortedTransactions };
     } catch (err) {
       return { status: 'error', data: err };
     }
@@ -93,4 +95,5 @@ export class TransactionController {
       return { status: 'error', data: e };
     }
   }
+
 }
