@@ -1,4 +1,6 @@
-import { Transaction } from "src/modules/database/schemas/transaction.schema";
+import { Category } from "src/models/category.model";
+import { SerieItem } from "src/models/chart";
+import { Transaction } from "src/models/transaction.model";
 
 export function getFirstAndLastDayOfCurrentMonth(): {
   from: string;
@@ -45,4 +47,38 @@ export function sortByDate(transacions: any): Transaction[] {
     return Number(bDate) - Number(aDate);
   }
   return transacions.sort(sortByDateDescending);
+}
+
+export function groupByTransactionsWithCategories(transacions: Transaction[], categories: Category[]): SerieItem[]{
+  const series: SerieItem[] = [];
+
+  const newCategories = [...categories, {_id: 'default', text: 'default'}]
+
+  newCategories.forEach(category => {
+
+    let serie: SerieItem = {
+      name: category.text,
+      amount: 0,
+      quantity: 0
+    }
+
+    transacions.forEach(transaction => {
+      if(category?._id.toString() === transaction.categoryId){
+        serie.amount += Number(transaction.amount)
+        serie.quantity++;
+      }
+
+    })
+
+    serie.amount = roundNumber2Decimal(serie.amount);
+
+    series.push(serie);
+  })
+
+  return series;
+
+}
+
+export function roundNumber2Decimal(value: number){
+  return Number(value.toFixed(2))
 }
