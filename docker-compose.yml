@@ -1,9 +1,39 @@
 version: '3'
 
 services:
+  nodeapp:
+    build:
+      context: ./nubank-integration-service/node-nubank-service
+    ports:
+      - "3000:3000"
+    networks:
+      - nubank-network
+  
+  pythonapp:
+    build:
+      context: ./nubank-integration-service/python-nubank-service
+    ports:
+      - "5000"
+    networks:
+      - nubank-network
+
   mongodb:
     image: mongo:latest
     ports:
-      - "27017:27017"
-    container_name: mongodb-instance
-    restart: always
+      - "27017"
+    volumes:
+      - ./mongodb-data:/data/db
+    networks:
+      - nubank-network
+  
+  be-financial-helper:
+    build:
+      context: ./be-financial-helper
+    ports:
+      - "3001"
+    networks:
+      - nubank-network
+
+networks:
+  nubank-network:
+    driver: bridge
