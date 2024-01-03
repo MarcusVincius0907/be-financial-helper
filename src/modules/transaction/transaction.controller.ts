@@ -86,14 +86,19 @@ export class TransactionController {
     }
   }
 
-  @Get('sync-transactions')
-  async syncTransactions() {
+  @Get('sync-transactions/:fromDate/:toDate')
+  async syncTransactions(
+    @Param('fromDate') fromDate: string,
+    @Param('toDate') toDate: string,
+  ) {
     try {
-      const resp = await this.service.syncTransactions();
+      if (!fromDate || !toDate) {
+        throw 'Need to send fromDate and toDate query params.';
+      }
+      const resp = await this.service.syncTransactions(fromDate, toDate);
       return { status: 'success', data: resp };
     } catch (e) {
       return { status: 'error', data: e };
     }
   }
-
 }

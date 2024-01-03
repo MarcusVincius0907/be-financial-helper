@@ -60,9 +60,12 @@ export class TransactionService {
     }
   }
 
-  async syncTransactions() {
+  async syncTransactions(fromDate: string, toDate: string) {
     try {
-      const externalTransactions = await this.nubankService.getTransactions();
+      const externalTransactions = await this.nubankService.getTransactions(
+        fromDate,
+        toDate,
+      );
       const currentTransactions = await this.model.find().exec();
 
       let needToAddTransactions: Transaction[] = [];

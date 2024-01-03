@@ -11,19 +11,14 @@ export class NubankIntegrationService {
     this.url = process.env.NUBANK_INTEGRATION_URL;
   }
 
-  async getTransactions(): Promise<AxiosResponse> {
-    const { from, to } = getFirstAndLastDayOfCurrentMonth();
-
+  async getTransactions(from: string, to: string): Promise<AxiosResponse> {
     const config = {
-      params: { 
+      params: {
         fromDate: from,
-        toDate: to
-      }
-    }
+        toDate: to,
+      },
+    };
 
-    return axios.get(
-      `${this.url}/service/get-card-statements`, config
-    );
+    return axios.get(`${this.url}/service/get-card-statements`, config);
   }
-
 }
