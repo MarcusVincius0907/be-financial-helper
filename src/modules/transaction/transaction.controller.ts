@@ -40,6 +40,21 @@ export class TransactionController {
     }
   }
 
+  @Get('/:fromDate/:toDate')
+  async getFilteredByDate(
+    @Param('fromDate') fromDate: string,
+    @Param('toDate') toDate: string,
+  ) {
+    try {
+      const allTransactions: Transaction[] =
+        await this.service.getFilteredByDate(fromDate, toDate);
+      const sortedTransactions = sortByDate(allTransactions);
+      return { status: 'success', data: sortedTransactions };
+    } catch (err) {
+      return { status: 'error', data: err };
+    }
+  }
+
   @Put(':id')
   async update(@Param('id') id: string, @Body() bodyData: Transaction) {
     try {

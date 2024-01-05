@@ -23,6 +23,23 @@ export class TransactionService {
     }
   }
 
+  async getFilteredByDate(fromDate: string, toDate: string) {
+    try {
+      const allTransactions = await this.model.find().exec();
+      return allTransactions.filter((item) => {
+        const itemDate = new Date(item.date);
+        const filterFromDate = new Date(fromDate);
+        const filterToDate = new Date(toDate);
+
+        // Compare dates
+        return itemDate >= filterFromDate && itemDate <= filterToDate;
+      });
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async create(data: Transaction) {
     try {
       const createdData = new this.model(data);
