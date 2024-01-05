@@ -1,6 +1,6 @@
-import { Category } from "src/models/category.model";
-import { SerieItem } from "src/models/chart";
-import { Transaction } from "src/models/transaction.model";
+import { Category } from 'src/models/category.model';
+import { SerieItem } from 'src/models/chart';
+import { Transaction } from 'src/models/transaction.model';
 
 export function getFirstAndLastDayOfCurrentMonth(): {
   from: string;
@@ -45,40 +45,55 @@ export function sortByDate(transacions: any): Transaction[] {
     const bDate = new Date(b.date);
     const aDate = new Date(a.date);
     return Number(bDate) - Number(aDate);
-  }
+  };
   return transacions.sort(sortByDateDescending);
 }
 
-export function groupByTransactionsWithCategories(transacions: Transaction[], categories: Category[]): SerieItem[]{
+export function groupByTransactionsWithCategories(
+  transacions: Transaction[],
+  categories: Category[],
+): SerieItem[] {
   const series: SerieItem[] = [];
 
-  const newCategories = [...categories, {_id: 'default', text: 'default'}]
+  const newCategories = [...categories, { _id: 'default', text: 'default' }];
 
-  newCategories.forEach(category => {
-
+  newCategories.forEach((category) => {
     let serie: SerieItem = {
       name: category.text,
       amount: 0,
-      quantity: 0
-    }
+      quantity: 0,
+    };
 
-    transacions.forEach(transaction => {
-      if(category?._id.toString() === transaction.categoryId){
-        serie.amount += Number(transaction.amount)
+    transacions.forEach((transaction) => {
+      if (category?._id.toString() === transaction.categoryId) {
+        serie.amount += Number(transaction.amount);
         serie.quantity++;
       }
-
-    })
+    });
 
     serie.amount = roundNumber2Decimal(serie.amount);
 
     series.push(serie);
-  })
+  });
 
   return series;
-
 }
 
-export function roundNumber2Decimal(value: number){
-  return Number(value.toFixed(2))
+export function roundNumber2Decimal(value: number) {
+  return Number(value.toFixed(2));
+}
+
+export function filterByDateRange(
+  array: any,
+  fromDate: string,
+  toDate: string,
+) {
+  return array.filter((item) => {
+    const itemDate = new Date(item.date);
+    const filterFromDate = new Date(fromDate);
+    const filterToDate = new Date(toDate);
+
+    // Compare dates
+    return itemDate >= filterFromDate && itemDate <= filterToDate;
+  });
 }

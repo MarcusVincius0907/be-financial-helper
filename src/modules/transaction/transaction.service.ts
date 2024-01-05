@@ -4,7 +4,7 @@ import { Transaction as ClassSchema } from '../database/schemas/transaction.sche
 import { Model } from 'mongoose';
 import { Transaction } from 'src/models/transaction.model';
 import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
-import { formatAmountValue } from 'src/utils/utils';
+import { filterByDateRange, formatAmountValue } from 'src/utils/utils';
 
 @Injectable()
 export class TransactionService {
@@ -26,14 +26,7 @@ export class TransactionService {
   async getFilteredByDate(fromDate: string, toDate: string) {
     try {
       const allTransactions = await this.model.find().exec();
-      return allTransactions.filter((item) => {
-        const itemDate = new Date(item.date);
-        const filterFromDate = new Date(fromDate);
-        const filterToDate = new Date(toDate);
-
-        // Compare dates
-        return itemDate >= filterFromDate && itemDate <= filterToDate;
-      });
+      return filterByDateRange(allTransactions, fromDate, toDate);
     } catch (e) {
       console.log(e);
       return null;
