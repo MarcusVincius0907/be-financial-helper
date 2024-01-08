@@ -28,9 +28,9 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-  be-financial-helper:
+  financial-helper:
     build:
-      context: ./be-financial-helper
+      context: ./
     ports:
       - "3001:3001"
     networks:
@@ -40,14 +40,6 @@ services:
     environment:
       MONGO_URL: mongodb://mongodb:27017
       NUBANK_INTEGRATION_URL: http://nodeapp:3000
-
-  fe-financial-helper:
-    build:
-      context: ./fe-financial-helper
-    ports:
-      - "80:80"
-    networks:
-      - nubank-network
 
 networks:
   nubank-network:

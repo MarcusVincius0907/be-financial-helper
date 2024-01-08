@@ -1,24 +1,22 @@
 # Use an official Node.js LTS image as the base image
-FROM node:16-alpine AS builder
+FROM node
 
 # Set the working directory in the container
 WORKDIR /app
 
 # Copy package.json and package-lock.json to the container
-COPY ./be-financial-helper ./be-financial-helper
-COPY ./fe-financial-helper ./fe-financial-helper
+COPY package*.json ./
 
-WORKDIR /app/fe-financial-helper
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the application code to the container
+COPY ../fe-financial-helper/dist ./public
+
+# Install dependencies
 RUN npm run build
 
-WORKDIR /app/be-financial-helper
-
-RUN npm install
-RUN npm run build
-
-WORKDIR /app/be-financial-helper
-
+# Expose the port on which the application will run
 EXPOSE 3001
 
 # Define the command to run your application
