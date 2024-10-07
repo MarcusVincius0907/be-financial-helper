@@ -157,7 +157,7 @@ export function generateDashboardData(
     lastBoughtItems: transactions.slice(0, 5),
     currentMonthExpense: Object.entries(currentMonthExpense).map(
       ([date, count]) => ({ label: date, data: count })
-    ),
+    ).reverse(),
     categoryChart: Object.entries(categoryCount).map(([category, count]) => ({
       label: categoryMap.get(category).text,
       data: count,

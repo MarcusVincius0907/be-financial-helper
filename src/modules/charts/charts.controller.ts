@@ -4,7 +4,6 @@ import { CategoryService } from '../category/category.service';
 import {
   filterByDateRange,
   generateDashboardData,
-  groupByTransactionsWithCategories,
 } from 'src/utils/utils';
 
 @Controller('charts')
