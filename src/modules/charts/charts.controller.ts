@@ -3,6 +3,7 @@ import { TransactionService } from '../transaction/transaction.service';
 import { CategoryService } from '../category/category.service';
 import {
   filterByDateRange,
+  generateDashboardData,
   groupByTransactionsWithCategories,
 } from 'src/utils/utils';
 
@@ -13,6 +14,7 @@ export class ChartsController {
     private categoryService: CategoryService,
   ) {}
 
+  //TODO: save object in cache
   @Get('transactions/:fromDate/:toDate')
   async getChartTransactions(
     @Param('fromDate') fromDate: string,
@@ -26,19 +28,12 @@ export class ChartsController {
         toDate,
       );
       const categories = await this.categoryService.getAll();
-      const labels = categories.map((category) => category.text);
-      labels.push('default');
-      const series = groupByTransactionsWithCategories(
-        filteredTransactions,
-        categories,
-      );
-      const payload = {
-        labels,
-        series,
-      };
+      const payload = generateDashboardData(filteredTransactions, categories);
       return { status: 'success', data: payload };
     } catch (err) {
       return { status: 'error', data: err };
     }
   }
+
+  
 }

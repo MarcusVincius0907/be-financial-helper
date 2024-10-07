@@ -1,6 +1,6 @@
-import { Category } from 'src/models/category.model';
-import { SerieItem } from 'src/models/chart';
-import { Transaction } from 'src/models/transaction.model';
+import { Category } from "src/models/category.model";
+import { SerieItem, TrasactionChart } from "src/models/chart";
+import { Transaction } from "src/models/transaction.model";
 
 export function getFirstAndLastDayOfCurrentMonth(): {
   from: string;
@@ -18,12 +18,12 @@ export function getFirstAndLastDayOfCurrentMonth(): {
   const currentMonthDate = new Date(currentYear, currentMonth, 27);
 
   let fyear = lastMonthDate.getFullYear();
-  let fmonth = (lastMonthDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
-  let fday = lastMonthDate.getDate().toString().padStart(2, '0');
+  let fmonth = (lastMonthDate.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+  let fday = lastMonthDate.getDate().toString().padStart(2, "0");
 
   let lyear = currentMonthDate.getFullYear();
-  let lmonth = (currentMonthDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
-  let lday = currentMonthDate.getDate().toString().padStart(2, '0');
+  let lmonth = (currentMonthDate.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+  let lday = currentMonthDate.getDate().toString().padStart(2, "0");
 
   // Create the formatted date string
   let fformattedDate = `${fyear}-${fmonth}-${fday}T00:00:00.418Z`;
@@ -51,11 +51,11 @@ export function sortByDate(transacions: any): Transaction[] {
 
 export function groupByTransactionsWithCategories(
   transacions: Transaction[],
-  categories: Category[],
+  categories: Category[]
 ): SerieItem[] {
   const series: SerieItem[] = [];
 
-  const newCategories = [...categories, { _id: 'default', text: 'default' }];
+  const newCategories = [...categories, { _id: "default", text: "default" }];
 
   newCategories.forEach((category) => {
     let serie: SerieItem = {
@@ -86,7 +86,7 @@ export function roundNumber2Decimal(value: number) {
 export function filterByDateRange(
   array: any,
   fromDate: string,
-  toDate: string,
+  toDate: string
 ) {
   return array.filter((item) => {
     const itemDate = new Date(item.date);
@@ -96,4 +96,80 @@ export function filterByDateRange(
     // Compare dates
     return itemDate >= filterFromDate && itemDate <= filterToDate;
   });
+}
+
+
+export function generateDashboardData(
+  transactions: Transaction[],
+  categories: Category[]
+): TrasactionChart {
+  const descriptionCount: Record<string, number> = {};
+  const categoryCount: Record<string, number> = {};
+  const currentMonthExpense: Record<string, number> = {};
+  const budgetByCategory: Record<string, number> = {};
+  let overHundredTransactionCounter = 0;
+  let highestAmountTransaction: Transaction = transactions[0];
+
+  transactions.forEach(({ description, date, amount, categoryId }, index) => {
+    descriptionCount[description] = (descriptionCount[description] || 0) + 1;
+    categoryCount[categoryId] = (categoryCount[categoryId] || 0) + 1;
+    let formattedDate = date.split("T")[0];
+    currentMonthExpense[formattedDate] =
+      parseFloat((Number(currentMonthExpense[formattedDate] || 0) + Number(amount)).toFixed(2));
+    budgetByCategory[categoryId] =
+      parseFloat((Number(budgetByCategory[categoryId] || 0) + Number(amount)).toFixed(2));
+    if (amount > 100) overHundredTransactionCounter++;
+    if (amount > highestAmountTransaction.amount) {
+      highestAmountTransaction = transactions[index];
+    }
+  });
+
+  let maxCount = 0;
+  let mostFrequentDesc: string | null = null;
+
+  for (const [desc, count] of Object.entries(descriptionCount)) {
+    if (count > maxCount) {
+      maxCount = count;
+      mostFrequentDesc = desc;
+    }
+  }
+
+  let maxCountCat = 0;
+  let mostFrequentCat: string | null = null;
+
+  for (const [categoryId, count] of Object.entries(categoryCount)) {
+    if (count > maxCountCat) {
+      maxCountCat = count;
+      mostFrequentCat = categoryId;
+    }
+  }
+
+  const categoryMap = new Map(
+    categories.map((item) => [item._id.toString(), item])
+  );
+  categoryMap.set("default", { text: "default", value: "", budget: 0 });
+
+  const payload: TrasactionChart = {
+    mostVisited: mostFrequentDesc,
+    overHungredSpent: overHundredTransactionCounter,
+    mostExpensive: highestAmountTransaction.description,
+    mostSpentCategory: mostFrequentCat,
+    lastBoughtItems: transactions.slice(0, 5),
+    currentMonthExpense: Object.entries(currentMonthExpense).map(
+      ([date, count]) => ({ label: date, data: count })
+    ),
+    categoryChart: Object.entries(categoryCount).map(([category, count]) => ({
+      label: categoryMap.get(category).text,
+      data: count,
+    })),
+    budgetByCategory: Object.entries(budgetByCategory).map(
+      ([category, count]) => ({
+        category: categoryMap.get(category).text,
+        current: count,
+        expected: categoryMap.get(category).budget,
+      })
+    ),
+  };
+
+  return payload;
 }
