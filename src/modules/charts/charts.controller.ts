@@ -4,6 +4,7 @@ import { CategoryService } from '../category/category.service';
 import {
   filterByDateRange,
   generateDashboardData,
+  sortByDate,
 } from 'src/utils/utils';
 
 @Controller('charts')
@@ -27,7 +28,7 @@ export class ChartsController {
         toDate,
       );
       const categories = await this.categoryService.getAll();
-      const payload = generateDashboardData(filteredTransactions, categories);
+      const payload = generateDashboardData(sortByDate(filteredTransactions), categories);
       return { status: 'success', data: payload };
     } catch (err) {
       return { status: 'error', data: err };
