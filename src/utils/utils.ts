@@ -110,14 +110,19 @@ export function generateDashboardData(
   let overHundredTransactionCounter = 0;
   let highestAmountTransaction: Transaction = transactions[0];
 
+  const calcData = (num1: number, num2: number) =>{
+    return parseFloat((Number(num1) + Number(num2)).toFixed(2));
+  }
+
   transactions.forEach(({ description, date, amount, categoryId }, index) => {
+
     descriptionCount[description] = (descriptionCount[description] || 0) + 1;
-    categoryCount[categoryId] = (categoryCount[categoryId] || 0) + 1;
+    categoryCount[categoryId] = calcData(categoryCount[categoryId] || 0, amount)
+    budgetByCategory[categoryId] = calcData(budgetByCategory[categoryId] || 0, amount)
+    
     let formattedDate = date.split("T")[0];
-    currentMonthExpense[formattedDate] =
-      parseFloat((Number(currentMonthExpense[formattedDate] || 0) + Number(amount)).toFixed(2));
-    budgetByCategory[categoryId] =
-      parseFloat((Number(budgetByCategory[categoryId] || 0) + Number(amount)).toFixed(2));
+    currentMonthExpense[formattedDate] = calcData(currentMonthExpense[formattedDate] || 0, amount)
+
     if (amount > 100) overHundredTransactionCounter++;
     if (amount > highestAmountTransaction.amount) {
       highestAmountTransaction = transactions[index];
@@ -153,7 +158,7 @@ export function generateDashboardData(
     mostVisited: mostFrequentDesc,
     overHungredSpent: overHundredTransactionCounter,
     mostExpensive: highestAmountTransaction.description,
-    mostSpentCategory: mostFrequentCat,
+    mostSpentCategory: (categoryMap.get(mostFrequentCat)?.text || 'default'),
     lastBoughtItems: transactions.slice(0, 5),
     currentMonthExpense: Object.entries(currentMonthExpense).map(
       ([date, count]) => ({ label: date, data: count })
@@ -173,3 +178,4 @@ export function generateDashboardData(
 
   return payload;
 }
+
