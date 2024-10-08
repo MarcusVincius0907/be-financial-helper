@@ -8,6 +8,7 @@ import { ChartsModule } from './modules/charts/charts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { LoggerMiddleware } from './middlewares/logger.middleware';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'fe-financial-helper', 'dist'),
     }),
+    UserModule,
   ],
   controllers: [AppController],
 })
