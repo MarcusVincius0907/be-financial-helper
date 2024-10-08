@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Category, CategorySchema } from '../database/schemas/category.schema';
 import { Transaction, TransactionSchema } from '../database/schemas/transaction.schema';
 import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { NubankIntegrationService } from 'src/external-api/nubank-integration.se
     ]),
   ],
   controllers: [ChartsController],
-  providers: [CategoryService, TransactionService, NubankIntegrationService]
+  providers: [CategoryService, TransactionService, NubankIntegrationService, JwtService]
 })
 export class ChartsModule {}

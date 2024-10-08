@@ -10,6 +10,7 @@ import {
 } from '../database/schemas/transaction.schema';
 import { Category, CategorySchema } from '../database/schemas/category.schema';
 import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -20,6 +21,6 @@ import { NubankIntegrationService } from 'src/external-api/nubank-integration.se
     ]),
   ],
   controllers: [TransactionController],
-  providers: [TransactionService, ExternalApiService, NubankIntegrationService],
+  providers: [TransactionService, ExternalApiService, NubankIntegrationService, JwtService],
 })
 export class TransactionModule {}

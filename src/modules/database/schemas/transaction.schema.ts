@@ -17,6 +17,9 @@ export class Transaction extends Document {
 
   @Prop({ required: true })
   categoryId: string;
+
+  @Prop({ required: true })
+  userId: string;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);

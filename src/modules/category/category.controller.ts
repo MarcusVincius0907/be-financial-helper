@@ -6,18 +6,22 @@ import {
   Param,
   Post,
   Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { Category } from 'src/models/category.model';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Get('all')
-  async getAll() {
+  async getAll(@Request() req) {
     try {
-      const allCategories = await this.categoryService.getAll();
+      const allCategories = await this.categoryService.getAll(req?.user?.id);
       return { status: 'success', data: allCategories };
     } catch (err) {
       return { status: 'error', data: err };
@@ -51,9 +55,10 @@ export class CategoryController {
   }
 
   @Post('create')
-  async create(@Body() bodyData: Category) {
+  async create(@Request() req, @Body() bodyData: Category) {
     try {
-      const dataCreated = await this.categoryService.create(bodyData);
+      const addUserIdObj = {...bodyData, userId: req?.user?.id}
+      const dataCreated = await this.categoryService.create(addUserIdObj);
       return { status: 'success', data: dataCreated };
     } catch (err) {
       return { status: 'error', data: err };

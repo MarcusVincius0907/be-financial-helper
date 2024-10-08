@@ -11,9 +11,9 @@ export class CategoryService {
     private readonly categoryModel: Model<Category>,
   ) {}
 
-  async getAll() {
+  async getAll(userId: string) {
     try {
-      return await this.categoryModel.find().exec();
+      return await this.categoryModel.find({userId}).exec();
     } catch (e) {
       console.log(e);
       return null;

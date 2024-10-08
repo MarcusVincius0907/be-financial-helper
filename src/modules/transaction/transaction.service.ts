@@ -14,18 +14,18 @@ export class TransactionService {
     private nubankService: NubankIntegrationService,
   ) {}
 
-  async getAll() {
+  async getAll(userId: string) {
     try {
-      return await this.model.find().exec();
+      return await this.model.find({userId}).exec();
     } catch (e) {
       console.log(e);
       return null;
     }
   }
 
-  async getFilteredByDate(fromDate: string, toDate: string) {
+  async getFilteredByDate(userId: string, fromDate: string, toDate: string) {
     try {
-      const allTransactions = await this.model.find().exec();
+      const allTransactions = await this.model.find({userId}).exec();
       return filterByDateRange(allTransactions, fromDate, toDate);
     } catch (e) {
       console.log(e);
@@ -70,7 +70,7 @@ export class TransactionService {
     }
   }
 
-  async syncTransactions(fromDate: string, toDate: string) {
+  async syncTransactions(userId: string, fromDate: string, toDate: string) {
     try {
       const externalTransactions = await this.nubankService.getTransactions(
         fromDate,
@@ -98,6 +98,7 @@ export class TransactionService {
               date: externalTransaction.time,
               amount: formatAmountValue(externalTransaction.amount),
               categoryId: 'default',
+              userId
             },
           ];
         }

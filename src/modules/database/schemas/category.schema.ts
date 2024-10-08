@@ -11,6 +11,9 @@ export class Category extends Document {
 
   @Prop({ required: true })
   budget: number;
+
+  @Prop({ required: true })
+  userId: string;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

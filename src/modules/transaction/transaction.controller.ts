@@ -6,12 +6,16 @@ import {
   Param,
   Post,
   Put,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import { ExternalApiService } from 'src/external-api/external-api.service';
 import { TransactionService } from './transaction.service';
 import { Transaction } from 'src/models/transaction.model';
 import { sortByDate } from 'src/utils/utils';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('transaction')
 export class TransactionController {
   constructor(
@@ -29,10 +33,11 @@ export class TransactionController {
     }
   }
 
+  
   @Get('all')
-  async getAll() {
+  async getAll(@Request() req) {
     try {
-      const allTransactions: Transaction[] = await this.service.getAll();
+      const allTransactions: Transaction[] = await this.service.getAll(req?.user?.id);
       const sortedTransactions = sortByDate(allTransactions);
       return { status: 'success', data: sortedTransactions };
     } catch (err) {
@@ -42,12 +47,13 @@ export class TransactionController {
 
   @Get('/:fromDate/:toDate')
   async getFilteredByDate(
+    @Request() req,
     @Param('fromDate') fromDate: string,
     @Param('toDate') toDate: string,
   ) {
     try {
       const allTransactions: Transaction[] =
-        await this.service.getFilteredByDate(fromDate, toDate);
+        await this.service.getFilteredByDate(req?.user?.id,fromDate, toDate);
       const sortedTransactions = sortByDate(allTransactions);
       return { status: 'success', data: sortedTransactions };
     } catch (err) {
@@ -103,6 +109,7 @@ export class TransactionController {
 
   @Get('sync-transactions/:fromDate/:toDate')
   async syncTransactions(
+    @Request() req,
     @Param('fromDate') fromDate: string,
     @Param('toDate') toDate: string,
   ) {
@@ -110,7 +117,7 @@ export class TransactionController {
       if (!fromDate || !toDate) {
         throw 'Need to send fromDate and toDate query params.';
       }
-      const resp = await this.service.syncTransactions(fromDate, toDate);
+      const resp = await this.service.syncTransactions(req?.user?.id,fromDate, toDate);
       return { status: 'success', data: resp };
     } catch (e) {
       return { status: 'error', data: e };

@@ -4,6 +4,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Category, CategorySchema } from '../database/schemas/category.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CategoryService } from './category.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -13,6 +14,6 @@ import { CategoryService } from './category.service';
     ]),
   ],
   controllers: [CategoryController],
-  providers: [CategoryService],
+  providers: [CategoryService, JwtService],
 })
 export class CategoryModule {}
