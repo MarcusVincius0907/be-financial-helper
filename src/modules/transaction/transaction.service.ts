@@ -4,7 +4,8 @@ import { Transaction as ClassSchema } from '../database/schemas/transaction.sche
 import { Model } from 'mongoose';
 import { Transaction } from 'src/models/transaction.model';
 import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
-import { filterByDateRange, formatAmountValue } from 'src/utils/utils';
+import { convertToISO, filterByDateRange, formatAmountValue, parseCurrency } from 'src/utils/utils';
+import { GoogleSheetService } from 'src/external-api/google-sheets.service';
 
 @Injectable()
 export class TransactionService {
@@ -12,11 +13,12 @@ export class TransactionService {
     @InjectModel(ClassSchema.name)
     private readonly model: Model<Transaction>,
     private nubankService: NubankIntegrationService,
-  ) {}
+    private googleSheetService: GoogleSheetService
+  ) { }
 
   async getAll(userId: string) {
     try {
-      return await this.model.find({userId}).exec();
+      return await this.model.find({ userId }).exec();
     } catch (e) {
       console.log(e);
       return null;
@@ -25,7 +27,7 @@ export class TransactionService {
 
   async getFilteredByDate(userId: string, fromDate: string, toDate: string) {
     try {
-      const allTransactions = await this.model.find({userId}).exec();
+      const allTransactions = await this.model.find({ userId }).exec();
       return filterByDateRange(allTransactions, fromDate, toDate);
     } catch (e) {
       console.log(e);
@@ -70,7 +72,8 @@ export class TransactionService {
     }
   }
 
-  async syncTransactions(userId: string, fromDate: string, toDate: string) {
+  //not in use anymore
+  async syncNubankTransactions(userId: string, fromDate: string, toDate: string) {
     try {
       const externalTransactions = await this.nubankService.getTransactions(
         fromDate,
@@ -109,5 +112,37 @@ export class TransactionService {
       console.log(e);
       return e;
     }
+  }
+
+  async syncGoogleSheet(userId: string) {
+    const sheetData = await this.googleSheetService.getSheetData();
+    const needToAddTransactions: Transaction[] = [];
+    
+    sheetData.forEach(({ date, description, value }) => {
+      needToAddTransactions.push({
+        userId,
+        date: convertToISO(date),
+        description,
+        amount: parseCurrency(value),
+        categoryId: 'default',
+      })
+    })
+
+    const currentTransactions = await this.model.find().exec();
+    currentTransactions?.forEach((currentTransaction) => {
+      needToAddTransactions.forEach((transaction, i, arr) => {
+        if(
+          currentTransaction.date === transaction.date &&
+          currentTransaction.description === transaction.description &&
+          Number(currentTransaction.amount) === transaction.amount 
+        ){
+          arr[i].categoryId = currentTransaction.categoryId;
+        }
+      })
+    })
+
+    await this.deleteAll();
+
+    return await this.model.create(needToAddTransactions)
   }
 }

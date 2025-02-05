@@ -40,6 +40,10 @@ export function formatAmountValue(amount: number): number {
   return amount / 100;
 }
 
+export function parseCurrency(value: string): number {
+  return parseFloat(value.replace(/[R$\s]/g, '').replace(',', '.'));
+}
+
 export function sortByDate(transacions: any): Transaction[] {
   const sortByDateDescending = (a, b) => {
     const bDate = new Date(b.date);
@@ -47,6 +51,12 @@ export function sortByDate(transacions: any): Transaction[] {
     return Number(bDate) - Number(aDate);
   };
   return transacions.sort(sortByDateDescending);
+}
+
+export function convertToISO(dateString: string): string {
+  const [day, month, year] = dateString.split('/').map(Number);
+  const date = new Date(year, month - 1, day);
+  return date.toISOString();
 }
 
 export function groupByTransactionsWithCategories(

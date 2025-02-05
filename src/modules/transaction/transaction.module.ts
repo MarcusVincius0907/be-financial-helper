@@ -11,6 +11,7 @@ import {
 import { Category, CategorySchema } from '../database/schemas/category.schema';
 import { NubankIntegrationService } from 'src/external-api/nubank-integration.service';
 import { JwtService } from '@nestjs/jwt';
+import { GoogleSheetService } from 'src/external-api/google-sheets.service';
 
 @Module({
   imports: [
@@ -21,6 +22,6 @@ import { JwtService } from '@nestjs/jwt';
     ]),
   ],
   controllers: [TransactionController],
-  providers: [TransactionService, ExternalApiService, NubankIntegrationService, JwtService],
+  providers: [TransactionService, ExternalApiService, NubankIntegrationService, JwtService, GoogleSheetService],
 })
 export class TransactionModule {}

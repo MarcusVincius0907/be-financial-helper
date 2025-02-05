@@ -107,17 +107,17 @@ export class TransactionController {
     }
   }
 
-  @Get('sync-transactions/:fromDate/:toDate')
+  @Get('sync-transactions/:fromDate?/:toDate?')
   async syncTransactions(
     @Request() req,
-    @Param('fromDate') fromDate: string,
-    @Param('toDate') toDate: string,
+    @Param('fromDate') fromDate?: string,
+    @Param('toDate') toDate?: string,
   ) {
     try {
-      if (!fromDate || !toDate) {
-        throw 'Need to send fromDate and toDate query params.';
-      }
-      const resp = await this.service.syncTransactions(req?.user?.id,fromDate, toDate);
+      // if (!fromDate || !toDate) {
+      //   throw 'Need to send fromDate and toDate query params.';
+      // }
+      const resp = await this.service.syncGoogleSheet(req?.user?.id);
       return { status: 'success', data: resp };
     } catch (e) {
       return { status: 'error', data: e };

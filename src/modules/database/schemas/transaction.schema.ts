@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 @Schema()
 export class Transaction extends Document {
-  @Prop({ required: true })
+  @Prop({ required: false })
   externalId: string;
 
   @Prop({ required: true })
