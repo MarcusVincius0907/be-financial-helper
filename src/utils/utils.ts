@@ -41,7 +41,11 @@ export function formatAmountValue(amount: number): number {
 }
 
 export function parseCurrency(value: string): number {
-  return parseFloat(value.replace(/[R$\s]/g, '').replace(',', '.'));
+  return parseFloat(
+    value
+      .replace(/[R$\s]/g, '')
+      .replace('.', '')
+      .replace(',', ''));
 }
 
 export function sortByDate(transacions: any): Transaction[] {
