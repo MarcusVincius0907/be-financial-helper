@@ -123,7 +123,7 @@ export class TransactionService {
         userId,
         date: convertToISO(date),
         description,
-        amount: Number(value),
+        amount: parseCurrency(value),
         categoryId: 'default',
       })
     })

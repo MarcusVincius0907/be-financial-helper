@@ -45,7 +45,7 @@ export function parseCurrency(value: string): number {
     value
       .replace(/[R$\s]/g, '')
       .replace('.', '')
-      .replace(',', ''));
+      .replace(',', '')) / 100;
 }
 
 export function sortByDate(transacions: any): Transaction[] {
