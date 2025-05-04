@@ -61,6 +61,23 @@ export class TransactionController {
     }
   }
 
+  /* 
+    TODO: this must receive an range as param, because 
+    we should not update all
+  */
+  @Put('/update-by-description')
+  async updateAllByDescription(@Body() bodyData: {description: string, categoryId: string}) {
+    try {
+      if (!bodyData?.description || !bodyData?.categoryId) {
+        throw 'É necessário enviar os parâmetros';
+      }
+      const updatedData = await this.service.updateAll(bodyData.description, bodyData.categoryId);
+      return { status: 'success', data: updatedData };
+    } catch (err) {
+      return { status: 'error', data: err };
+    }
+  }
+
   @Put(':id')
   async update(@Param('id') id: string, @Body() bodyData: Transaction) {
     try {
@@ -73,6 +90,8 @@ export class TransactionController {
       return { status: 'error', data: err };
     }
   }
+
+  
 
   @Delete('delete-all')
   async deleteAll() {

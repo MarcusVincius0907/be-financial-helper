@@ -54,6 +54,18 @@ export class TransactionService {
     }
   }
 
+  async updateAll(description: string, categoryId: string) {
+    try {
+      return await this.model.updateMany(
+        { description: { $regex: description, $options: "i" } }, // case-insensitive match
+        { $set: { categoryId } }
+      )
+    } catch (e) {
+      console.log(e);
+      return null;
+    }
+  }
+
   async delete(id: string) {
     try {
       return await this.model.deleteOne({ _id: id }).exec();
